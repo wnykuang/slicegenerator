@@ -26,3 +26,8 @@ go.work.sum
 
 #vscode
 .vscode/
+
+#assets
+*.mp4
+*.jpeg
+*.jpg
