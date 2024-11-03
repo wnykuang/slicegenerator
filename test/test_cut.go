@@ -10,11 +10,12 @@ import (
 func main() {
 	videoClip := video.NewVideoClip("./example.mp4", "00:00:00", "00:00:5", "")
 	videoClip.Print()
-	err := videoClip.Cut()
-	str, err := videoClip.CountFrames()
-	fmt.Println("Frames: ", str)
+	// err := videoClip.Cut()
+	// str, err := videoClip.CountFrames()
+
+	frames, err := videoClip.GenerateScreenShots()
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Video cut successfully")
+	fmt.Printf("length of frames: %d\n", len(frames))
 }
