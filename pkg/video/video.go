@@ -4,11 +4,14 @@ package video
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -58,7 +61,7 @@ func (v *VideoClip) Cut() error {
 		v.ExportPath = strings.TrimSuffix(v.ExportPath, ".mp4") + "_" + timestamp + ".mp4"
 	}
 
-	err := ffmpeg_go.Input(v.VideoPath, ffmpeg_go.KwArgs{"ss": v.StartTime, "t": v.EndTime}).
+	err := ffmpeg_go.Input(v.VideoPath, ffmpeg_go.KwArgs{"ss": v.StartTime, "to": v.EndTime}).
 		Output(v.ExportPath).OverWriteOutput().WithErrorOutput(&stderr).Run()
 	if err != nil {
 		return fmt.Errorf("Error in cutting video: %v", stderr.String())
@@ -68,15 +71,60 @@ func (v *VideoClip) Cut() error {
 	return nil
 }
 
-func (v *VideoClip) generateScreenShots() ([]image.Image, error) {
+func (v *VideoClip) GenerateScreenShots() ([]image.Image, error) {
 
-	// var screenshots []image.Image
-	return nil, nil
+	//get the number of frames in the video
+	frameCount, err := v.CountFrames()
+	if err != nil {
+		return nil, err
+	}
+	var images []image.Image
 
+	//load the frames into RAM
+	for i := 0; i < int(frameCount); i++ {
+		// buf := new(bytes.Buffer)
+		var buf bytes.Buffer
+
+		//get the ith frame
+		var stderr bytes.Buffer
+		err := ffmpeg_go.Input(v.ExportPath).
+			Filter("select", ffmpeg_go.Args{fmt.Sprintf("eq(n, %d)", i)}).
+			Output("pipe:", ffmpeg_go.KwArgs{"vframes": 1, "format": "image2", "vcodec": "mjpeg"}).
+			WithOutput(&buf).
+			WithErrorOutput(&stderr).
+			Run()
+
+		if err != nil {
+			// panic(err + "detail is")
+			log.Fatal("Error in generating screenshot: ", stderr.String())
+		}
+
+		img, err := jpeg.Decode(&buf)
+		if err != nil {
+			panic(err)
+		}
+
+		images = append(images, img)
+	}
+	return images, nil
 }
 
 func (v *VideoClip) CountFrames() (int64, error) {
 	output, err := ffmpeg_go.Probe(v.ExportPath, ffmpeg_go.KwArgs{"show_entries": "stream=nb_frames", "select_streams": "v"})
-	fmt.Println(output, err)
-	return 0, nil
+
+	if err != nil {
+		return 0, err
+	}
+
+	//parse the output to get the number of frames
+	var output_res map[string]interface{}
+	json_err := json.Unmarshal([]byte(output), &output_res)
+
+	if json_err != nil {
+		return 0, json_err
+	}
+
+	frame_count_st := output_res["streams"].([]interface{})[0].(map[string]interface{})["nb_frames"].(string)
+	frame_count, err := strconv.ParseInt(frame_count_st, 10, 64)
+	return frame_count, nil
 }
