@@ -17,5 +17,6 @@ Done:
 
 TODO:
 - [] Integrate the different frames into one.
+- [] Better algorithm to detect the difference of the subtitles, right now is basded on the (global) binarization and the sweepline to detect the line of the subtitles. It's dumb. 
 - [] CLI interface to make it works.
 - [] CD with github action

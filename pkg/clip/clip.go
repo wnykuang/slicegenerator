@@ -34,6 +34,13 @@ func (c *clip) GetDifferentFrames() []image.Image {
 			last_index = i
 		}
 	}
+
+	last_frame := c.screenshots[len(c.screenshots)-1]
+
+	if IsFrameDifferent(c.screenshots[last_index], last_frame) {
+		different_frames = append(different_frames, c.screenshots[last_index])
+	}
+
 	//append the last frame
 	return different_frames
 }
@@ -175,7 +182,7 @@ func CalculateSimilarity(frame1, frame2 image.Image) int {
 		return 0
 	}
 
-	if math.Abs(float64(start_i_1-start_i_2)) < float64(width)/10 {
+	if math.Abs(float64(start_i_1-start_i_2)) < float64(width)/20 {
 		return 100
 	}
 

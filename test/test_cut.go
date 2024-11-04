@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	videoClip := video.NewVideoClip("./example.mp4", "00:01:12", "00:01:17", "")
+	videoClip := video.NewVideoClip("./example.mp4", "00:00:20", "00:00:23", "")
 	videoClip.Print()
 	err := videoClip.Cut()
 	// str, err := videoClip.CountFrames()
