@@ -64,7 +64,7 @@ func IsFrameDifferent(frame1, frame2 image.Image) bool {
 
 	//binarizate the images
 
-	binarizeThreshold := 200
+	binarizeThreshold := 220
 
 	binazed_frame1 := BinarizateImage(lower_frame1, float32(binarizeThreshold))
 	binazed_frame2 := BinarizateImage(lower_frame2, float32(binarizeThreshold))
@@ -91,7 +91,7 @@ func isFrameAllBlack(frame image.Image) bool {
 	rect := image.Rect(0, 4*lower_height, width, height)
 
 	lower_frame1 := CopySubImage(frame, rect)
-	binazed_frame := BinarizateImage(lower_frame1, 200)
+	binazed_frame := BinarizateImage(lower_frame1, 220)
 
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
