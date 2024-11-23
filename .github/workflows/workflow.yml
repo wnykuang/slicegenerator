@@ -26,27 +26,37 @@ jobs:
 
         #Build the binary for windows
         - name: Build for Windows
-          run: GOOS=windows GOARCH=amd64 go build -o myapp.exe
+          run: GOOS=windows GOARCH=amd64 go build -o video-slicer-windows.exe
         
         #Build the binary for linux
         - name: Build for Linux
-          run: GOOS=linux GOARCH=amd64 go build -o myapp
+          run: GOOS=linux GOARCH=amd64 go build -o video-slicer-linux
         
         #Build the binary for mac
         - name: Build for Mac
-          run: GOOS=darwin GOARCH=amd64 go build -o myapp_mac
-
-        #Update them to the release page
-        - name: Create Release
-          id: create_release
-          uses: actions/create-release@v1
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: GOOS=darwin GOARCH=amd64 go build -o video-slicer-mac
+        
+        - name: upload release asset
+          uses: actions/upload-artifact@v4
           with:
-            tag_name: ${{ github.ref }}
-            release_name: Release ${{ github.ref }}
-            body: |
-              Changes in this Release
-            draft: false
-            prerelease: false
+            name: video-slicer-binaries
+            path: |
+              video-slicer-windows.exe
+              video-slicer-linux
+              video-slicer-mac
+
+
+        # #Update them to the release page
+        # - name: Create Release
+        #   id: create_release
+        #   uses: actions/create-release@v1
+        #   env:
+        #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        #   with:
+        #     tag_name: ${{ github.ref }}
+        #     release_name: Release ${{ github.ref }}
+        #     body: |
+        #       Changes in this Release
+        #     draft: false
+        #     prerelease: false
         
