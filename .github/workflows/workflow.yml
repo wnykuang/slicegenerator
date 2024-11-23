@@ -27,23 +27,36 @@ jobs:
         #Build the binary for windows
         - name: Build for Windows
           run: GOOS=windows GOARCH=amd64 go build -o video-slicer-windows.exe
-        
+
+        - name: upload windows artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: video-slicer-windows.exe
+            path: video-slicer-windows.exe 
+
         #Build the binary for linux
         - name: Build for Linux
           run: GOOS=linux GOARCH=amd64 go build -o video-slicer-linux
-        
+
+
+        - name: upload linux artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: video-slicer-linux
+            path: video-slicer-linux 
+ 
         #Build the binary for mac
         - name: Build for Mac
           run: GOOS=darwin GOARCH=amd64 go build -o video-slicer-mac
         
-        - name: upload release asset
+
+        - name: upload mac artifact
           uses: actions/upload-artifact@v4
           with:
-            name: video-slicer-binaries
-            path: |
-              video-slicer-windows.exe
-              video-slicer-linux
-              video-slicer-mac
+            name: video-slicer-mac
+            path: video-slicer-mac 
+ 
+ 
 
 
         # #Update them to the release page
